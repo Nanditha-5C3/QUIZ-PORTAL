@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="quiz1.css">
+    <title>CLASS 10 MATHS</title>
+</head>
+<body>
+    <center>
+        <div class="container">
+            <h1>CLASS 10 MATHS QUIZ</h1>
+            <div id="quiz"></div>
+            <div id="result" class="result"></div>
+            <button id="submit" class="button">Submit</button>
+            <button id="retry" class="button hide">Retry</button>
+            <button id="showAnswer" class="button hide">Show Answer</button>
+        </div>
+    </center>
+    <script>
+        const quizData = [
+            {
+                "question": "If x1, x2, x3,….., xn are the observations of a given data. Then the mean of the observations will be:",
+                "options": [
+                    "Sum of observations/Total number of observations",
+                    "Total number of observations/Sum of observations",
+                    "Sum of observations +Total number of observations",
+                    "None of the above"
+                ],
+                "answer": "Sum of observations/Total number of observations"
+            },
+            {
+                "question": "If the mean of frequency distribution is 7.5 and ∑fi xi = 120 + 3k, ∑fi = 30, then k is equal to:",
+                "options": ["40", "35", "50", "45"],
+                "answer": "35"
+            },
+            {
+                "question": "The mode and mean is given by 7 and 8, respectively. Then the median is:",
+                "options": ["1/13", "13/3", "23/3", "33"],
+                "answer": "23/3"
+            },
+            {
+                "question": "The mean of the data: 4, 10, 5, 9, 12 is;",
+                "options": ["8", "10", "9", "15"],
+                "answer": "8"
+            },
+            {
+                "question": "The median of the data 13, 15, 16, 17, 19, 20 is:",
+                "options": ["30/2", "31/2", "33/2", "35/2"],
+                "answer": "33/2"
+            },
+            {
+                "question": "If the mean of first n natural numbers is 3n/5, then the value of n is:",
+                "options": ["3", "4", "5", "6"],
+                "answer": "5"
+            },
+            {
+                "question": "If AM of a, a+3, a+6, a+9 and a+12 is 10, then a is equal to;",
+                "options": ["1", "2", "3", "4"],
+                "answer": "4"
+            },
+            {
+                "question": "The class interval of a given observation is 10 to 15, then the class mark for this interval will be:",
+                "options": ["11.5", "12.5", "12", "14"],
+                "answer": "12.5"
+            },
+            {
+                "question": "If the sum of frequencies is 24, then the value of x in the observation: x, 5,6,1,2, will be;",
+                "options": ["4", "6", "8", "10"],
+                "answer": "10"
+            }
+        ];
+        const quizContainer = document.getElementById('quiz');
+        const resultContainer = document.getElementById('result');
+        const submitButton = document.getElementById('submit');
+        const retryButton = document.getElementById('retry');
+        const showAnswerButton = document.getElementById('showAnswer');
+
+        let currentQuestion = 0;
+        let score = 0;
+        let incorrectAnswers = [];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function displayQuestion() {
+            const questionData = quizData[currentQuestion];
+
+            const questionElement = document.createElement('div');
+            questionElement.className = 'question';
+            questionElement.innerHTML = questionData.question;
+
+            const optionsElement = document.createElement('div');
+            optionsElement.className = 'options';
+
+            const shuffledOptions = [...questionData.options];
+            shuffleArray(shuffledOptions);
+
+            for (let i = 0; i < shuffledOptions.length; i++) {
+                const option = document.createElement('label');
+                option.className = 'option';
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'quiz';
+                radio.value = shuffledOptions[i];
+
+                const optionText = document.createTextNode(shuffledOptions[i]);
+
+                option.appendChild(radio);
+                option.appendChild(optionText);
+                optionsElement.appendChild(option);
+            }
+
+            quizContainer.innerHTML = '';
+            quizContainer.appendChild(questionElement);
+            quizContainer.appendChild(optionsElement);
+        }
+
+        function checkAnswer() {
+            const selectedOption = document.querySelector('input[name="quiz"]:checked');
+            if (selectedOption) {
+                const answer = selectedOption.value;
+                if (answer === quizData[currentQuestion].answer) {
+                    score++;
+                } else {
+                    incorrectAnswers.push({
+                        question: quizData[currentQuestion].question,
+                        incorrectAnswer: answer,
+                        correctAnswer: quizData[currentQuestion].answer,
+                    });
+                }
+                currentQuestion++;
+                selectedOption.checked = false;
+                if (currentQuestion < quizData.length) {
+                    displayQuestion();
+                } else {
+                    displayResult();
+                }
+            }
+        }
+
+        function displayResult() {
+            quizContainer.style.display = 'none';
+            submitButton.style.display = 'none';
+            retryButton.style.display = 'inline-block';
+            showAnswerButton.style.display = 'inline-block';
+            resultContainer.innerHTML = `You scored ${score} out of ${quizData.length}!`;
+        }
+
+        function retryQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            incorrectAnswers = [];
+            quizContainer.style.display = 'block';
+            submitButton.style.display = 'inline-block';
+            retryButton.style.display = 'none';
+            showAnswerButton.style.display = 'none';
+            resultContainer.innerHTML = '';
+            displayQuestion();
+        }
+
+        function showAnswer() {
+            quizContainer.style.display = 'none';
+            submitButton.style.display = 'none';
+            retryButton.style.display = 'inline-block';
+            showAnswerButton.style.display = 'none';
+
+            let incorrectAnswersHtml = '';
+            for (let i = 0; i < incorrectAnswers.length; i++) {
+                incorrectAnswersHtml += `
+          <p>
+            <strong>Question:</strong> ${incorrectAnswers[i].question}<br>
+            <strong>Your Answer:</strong> ${incorrectAnswers[i].incorrectAnswer}<br>
+            <strong>Correct Answer:</strong> ${incorrectAnswers[i].correctAnswer}
+          </p>
+        `;
+            }
+
+            resultContainer.innerHTML = `
+        <p>You scored ${score} out of ${quizData.length}!</p>
+        <p>Incorrect Answers:</p>
+        ${incorrectAnswersHtml}
+      `;
+        }
+
+        submitButton.addEventListener('click', checkAnswer);
+        retryButton.addEventListener('click', retryQuiz);
+        showAnswerButton.addEventListener('click', showAnswer);
+
+        displayQuestion();
+    </script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="quiz1.css">
+    <title>CLASS 9 MATHS</title>
+</head>
+<body>
+    <center>
+        <div class="container">
+            <h1>CLASS 9 MATHS QUIZ</h1>
+            <div id="quiz"></div>
+            <div id="result" class="result"></div>
+            <button id="submit" class="button">Submit</button>
+            <button id="retry" class="button hide">Retry</button>
+            <button id="showAnswer" class="button hide">Show Answer</button>
+        </div>
+    </center>
+    <script>
+        const quizData = [
+            {
+                "question": "If ABCD is a parallelogram, AE ⊥ DC and CF ⊥ AD. If AB = 10 cm, AE = 6 cm and CF = 5 cm, then AD is equal to:",
+                "options": ["10cm", "6cm", "12cm", "15cm"],
+                "answer": "12cm"
+            },
+            {
+                "question": "If E, F, G and H are the mid-points of the sides of a parallelogram ABCD, respectively, then ar (EFGH) is equal to:",
+                "options": ["1/2 ar(ABCD)", "1/4 ar(ABCD)", "2 ar(ABCD)", "ar(ABCD)"],
+                "answer": "1/2 ar(ABCD)"
+            },
+            {
+                "question": "If P and Q are any two points lying on the sides DC and AD respectively of a parallelogram ABCD, then:",
+                "options": ["ar(APB) > ar(BQC)", "ar(APB) < ar(BQC)", "ar(APB) = ar(BQC)", "None of the above"],
+                "answer": "ar(APB) = ar(BQC)"
+            },
+            {
+                "question": "If ABCD and EFGH are two parallelograms between the same parallel lines and on the same base, then:",
+                "options": ["ar (ABCD) > ar (EFGH)", "ar (ABCD) < ar (EFGH)", "ar (ABCD) = ar (EFGH)", "None of the above"],
+                "answer": "ar (ABCD) = ar (EFGH)"
+            },
+            {
+                "question": "A median of a triangle divides it into two",
+                "options": ["Congruent triangles", "Isosceles triangles", "Right triangles", "Equal area triangles"],
+                "answer": "Equal area triangles"
+            },
+            {
+                "question": "In a triangle ABC, E is the mid-point of median AD. Then:",
+                "options": ["ar(BED) = 1/4 ar(ABC)", "ar(BED) = ar(ABC)", "ar(BED) = 1/2 ar(ABC)", "ar(BED) = 2 ar(ABC)"],
+                "answer": "ar(BED) = 1/4 ar(ABC)"
+            },
+            {
+                "question": "If D and E are points on sides AB and AC respectively of ΔABC such that ar(DBC) = ar(EBC). Then:",
+                "options": ["DE is equal to BC", "DE is parallel to BC", "DE is not equal to BC", "DE is perpendicular to BC"],
+                "answer": "DE is parallel to BC"
+            },
+            {
+                "question": "If Diagonals AC and BD of a trapezium ABCD with AB || DC intersect each other at O. Then,",
+                "options": ["ar (AOD) = ar (BOC)", "ar (AOD) > ar (BOC)", "ar (AOD) < ar (BOC)", "None of the above"],
+                "answer": "ar (AOD) = ar (BOC)"
+            }
+        ];
+
+
+        const quizContainer = document.getElementById('quiz');
+        const resultContainer = document.getElementById('result');
+        const submitButton = document.getElementById('submit');
+        const retryButton = document.getElementById('retry');
+        const showAnswerButton = document.getElementById('showAnswer');
+
+        let currentQuestion = 0;
+        let score = 0;
+        let incorrectAnswers = [];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function displayQuestion() {
+            const questionData = quizData[currentQuestion];
+
+            const questionElement = document.createElement('div');
+            questionElement.className = 'question';
+            questionElement.innerHTML = questionData.question;
+
+            const optionsElement = document.createElement('div');
+            optionsElement.className = 'options';
+
+            const shuffledOptions = [...questionData.options];
+            shuffleArray(shuffledOptions);
+
+            for (let i = 0; i < shuffledOptions.length; i++) {
+                const option = document.createElement('label');
+                option.className = 'option';
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'quiz';
+                radio.value = shuffledOptions[i];
+
+                const optionText = document.createTextNode(shuffledOptions[i]);
+
+                option.appendChild(radio);
+                option.appendChild(optionText);
+                optionsElement.appendChild(option);
+            }
+
+            quizContainer.innerHTML = '';
+            quizContainer.appendChild(questionElement);
+            quizContainer.appendChild(optionsElement);
+        }
+
+        function checkAnswer() {
+            const selectedOption = document.querySelector('input[name="quiz"]:checked');
+            if (selectedOption) {
+                const answer = selectedOption.value;
+                if (answer === quizData[currentQuestion].answer) {
+                    score++;
+                } else {
+                    incorrectAnswers.push({
+                        question: quizData[currentQuestion].question,
+                        incorrectAnswer: answer,
+                        correctAnswer: quizData[currentQuestion].answer,
+                    });
+                }
+                currentQuestion++;
+                selectedOption.checked = false;
+                if (currentQuestion < quizData.length) {
+                    displayQuestion();
+                } else {
+                    displayResult();
+                }
+            }
+        }
+
+        function displayResult() {
+            quizContainer.style.display = 'none';
+            submitButton.style.display = 'none';
+            retryButton.style.display = 'inline-block';
+            showAnswerButton.style.display = 'inline-block';
+            resultContainer.innerHTML = `You scored ${score} out of ${quizData.length}!`;
+        }
+
+        function retryQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            incorrectAnswers = [];
+            quizContainer.style.display = 'block';
+            submitButton.style.display = 'inline-block';
+            retryButton.style.display = 'none';
+            showAnswerButton.style.display = 'none';
+            resultContainer.innerHTML = '';
+            displayQuestion();
+        }
+
+        function showAnswer() {
+            quizContainer.style.display = 'none';
+            submitButton.style.display = 'none';
+            retryButton.style.display = 'inline-block';
+            showAnswerButton.style.display = 'none';
+
+            let incorrectAnswersHtml = '';
+            for (let i = 0; i < incorrectAnswers.length; i++) {
+                incorrectAnswersHtml += `
+          <p>
+            <strong>Question:</strong> ${incorrectAnswers[i].question}<br>
+            <strong>Your Answer:</strong> ${incorrectAnswers[i].incorrectAnswer}<br>
+            <strong>Correct Answer:</strong> ${incorrectAnswers[i].correctAnswer}
+          </p>
+        `;
+            }
+
+            resultContainer.innerHTML = `
+        <p>You scored ${score} out of ${quizData.length}!</p>
+        <p>Incorrect Answers:</p>
+        ${incorrectAnswersHtml}
+      `;
+        }
+
+        submitButton.addEventListener('click', checkAnswer);
+        retryButton.addEventListener('click', retryQuiz);
+        showAnswerButton.addEventListener('click', showAnswer);
+
+        displayQuestion();
+    </script>
+</body>
+</html>

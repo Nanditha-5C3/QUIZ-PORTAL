@@ -1,0 +1,200 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="quiz1.css">
+    <title>CLASS 7 SCIENCE</title>
+</head>
+<body>
+    <center>
+        <div class="container">
+            <h1>CLASS 7 SCIENCE QUIZ</h1>
+            <div id="quiz"></div>
+            <div id="result" class="result"></div>
+            <button id="submit" class="button">Submit</button>
+            <button id="retry" class="button hide">Retry</button>
+            <button id="showAnswer" class="button hide">Show Answer</button>
+        </div>
+    </center>
+    <script>
+        const quizData =[
+            {
+                question: "Which of the following describes the process of depositing a zinc layer on iron?",
+                options: ["a) Galvanisation", "b) Crystallisation", "c) Rusting", "d) None of the above"],
+                answer: "a) Galvanisation",
+            },
+            {
+                question: "Which of the following are stainless steel constituents?",
+                options: ["a) Iron, Carbon, Nickel, Chromium", "b) Iron, Nickel, Manganese", "c) Iron, Nickel, Carbon, Manganese, Chromium", "d) Carbon, Iron, Nickel"],
+                answer: "c) Iron, Nickel, Carbon, Manganese, Chromium",
+            },
+            {
+                question: "Which of the following is not a chemical change characteristic?",
+                options: ["a) Change in colour", "b) Change in state", "c) Production of sound", "d) Change in smell"],
+                answer: "b) Change in state",
+            },
+            {
+                question: "What kind of change occurs when the tip of the blade is placed on a gas stove?",
+                options: ["a) Chemical change", "b) Physical change", "c) No change", "d) Irreversible change"],
+                answer: "b) Physical change",
+            },
+            {
+                question: "When magnesium is burned in the air, it produces powdery ash that, when dissolved in water, yields an aqueous solution. How will you categorize the aqueous solution?",
+                options: ["a) Acidic", "b) Neutral", "c) Basic", "d) Can’t be predicted"],
+                answer: "c) Basic",
+            },
+            {
+                question: "Which of the following does not represent a chemical change?",
+                options: ["a) Burning of leaves", "b) Fermentation of grapes", "c) Turning brown of freshly cut banana", "d) Freezing of water"],
+                answer: "d) Freezing of water",
+            },
+            {
+                question: "What kind of change is the explosion of fireworks?",
+                options: ["a) Physical change", "b) Chemical change", "c) Not a change", "d) Reversible change"],
+                answer: "b) Chemical change",
+            },
+            {
+                question: "When food spoils, it emits a foul odor as a result of a chemical change. What is the name given to this process?",
+                options: ["a) Rusting", "b) Rancidity", "c) Crystallization", "d) Corrosion"],
+                answer: "b) Rancidity",
+            },
+            {
+                question: "Which of the following is not a required condition for rusting to occur?",
+                options: ["a) Presence of oxygen", "b) Presence of CO2", "c) Presence of water vapor", "d) Presence of water"],
+                answer: "b) Presence of CO2",
+            },
+            {
+                question: "Which of the following is a physical change?",
+                options: ["a) Cutting a log of wood into pieces", "b) Ripening of a fruit", "c) Formation of manure from leaves", "d) Formation of salt from acid and base"],
+                answer: "a) Cutting a log of wood into pieces",
+            },
+        ];
+
+
+        const quizContainer = document.getElementById('quiz');
+        const resultContainer = document.getElementById('result');
+        const submitButton = document.getElementById('submit');
+        const retryButton = document.getElementById('retry');
+        const showAnswerButton = document.getElementById('showAnswer');
+
+        let currentQuestion = 0;
+        let score = 0;
+        let incorrectAnswers = [];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function displayQuestion() {
+            const questionData = quizData[currentQuestion];
+
+            const questionElement = document.createElement('div');
+            questionElement.className = 'question';
+            questionElement.innerHTML = questionData.question;
+
+            const optionsElement = document.createElement('div');
+            optionsElement.className = 'options';
+
+            const shuffledOptions = [...questionData.options];
+            shuffleArray(shuffledOptions);
+
+            for (let i = 0; i < shuffledOptions.length; i++) {
+                const option = document.createElement('label');
+                option.className = 'option';
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'quiz';
+                radio.value = shuffledOptions[i];
+
+                const optionText = document.createTextNode(shuffledOptions[i]);
+
+                option.appendChild(radio);
+                option.appendChild(optionText);
+                optionsElement.appendChild(option);
+            }
+
+            quizContainer.innerHTML = '';
+            quizContainer.appendChild(questionElement);
+            quizContainer.appendChild(optionsElement);
+        }
+
+        function checkAnswer() {
+            const selectedOption = document.querySelector('input[name="quiz"]:checked');
+            if (selectedOption) {
+                const answer = selectedOption.value;
+                if (answer === quizData[currentQuestion].answer) {
+                    score++;
+                } else {
+                    incorrectAnswers.push({
+                        question: quizData[currentQuestion].question,
+                        incorrectAnswer: answer,
+                        correctAnswer: quizData[currentQuestion].answer,
+                    });
+                }
+                currentQuestion++;
+                selectedOption.checked = false;
+                if (currentQuestion < quizData.length) {
+                    displayQuestion();
+                } else {
+                    displayResult();
+                }
+            }
+        }
+
+        function displayResult() {
+            quizContainer.style.display = 'none';
+            submitButton.style.display = 'none';
+            retryButton.style.display = 'inline-block';
+            showAnswerButton.style.display = 'inline-block';
+            resultContainer.innerHTML = `You scored ${score} out of ${quizData.length}!`;
+        }
+
+        function retryQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            incorrectAnswers = [];
+            quizContainer.style.display = 'block';
+            submitButton.style.display = 'inline-block';
+            retryButton.style.display = 'none';
+            showAnswerButton.style.display = 'none';
+            resultContainer.innerHTML = '';
+            displayQuestion();
+        }
+
+        function showAnswer() {
+            quizContainer.style.display = 'none';
+            submitButton.style.display = 'none';
+            retryButton.style.display = 'inline-block';
+            showAnswerButton.style.display = 'none';
+
+            let incorrectAnswersHtml = '';
+            for (let i = 0; i < incorrectAnswers.length; i++) {
+                incorrectAnswersHtml += `
+          <p>
+            <strong>Question:</strong> ${incorrectAnswers[i].question}<br>
+            <strong>Your Answer:</strong> ${incorrectAnswers[i].incorrectAnswer}<br>
+            <strong>Correct Answer:</strong> ${incorrectAnswers[i].correctAnswer}
+          </p>
+        `;
+            }
+
+            resultContainer.innerHTML = `
+        <p>You scored ${score} out of ${quizData.length}!</p>
+        <p>Incorrect Answers:</p>
+        ${incorrectAnswersHtml}
+      `;
+        }
+
+        submitButton.addEventListener('click', checkAnswer);
+        retryButton.addEventListener('click', retryQuiz);
+        showAnswerButton.addEventListener('click', showAnswer);
+
+        displayQuestion();
+    </script>
+</body>
+</html>

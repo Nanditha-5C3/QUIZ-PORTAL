@@ -1,0 +1,190 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="quiz1.css">
+    <title>CLASS 6 HINDI</title>
+</head>
+<body>
+    <center>
+        <div class="container">
+            <h1>CLASS 6 HINDI QUIZ</h1>
+            <div id="quiz"></div>
+            <div id="result" class="result"></div>
+            <button id="submit" class="button">Submit</button>
+            <button id="retry" class="button hide">Retry</button>
+            <button id="showAnswer" class="button hide">Show Answer</button>
+        </div>
+    </center>
+    <script> 
+        const quizData = [
+            {
+                question: 'मुख्य रुप से संज्ञा के तीन भेद होते हैं लेकिन कुछ विद्वान इसके 2 भेद और मानते हैं,जिससे संज्ञा के 5 भेद हो जाते हैं -',
+                options: ['प्रश्न-उत्तर-जातिवाचक-', 'व्यक्तिवाचक-जातिवाचक-भाववाचक-समूहवाचक-द्रव्यवाचक', 'हेतु-प्रश्न-उत्तर-विशेष-विशेषण', 'सार्वनामिक-विशेष्य-विशेषण-परिमाण-संख्या'],
+                answer: '13',
+            },
+            {
+                question: 'चिड़िया आनंदपूर्वक क्या खाती है ?',
+                options: ['दूध भरे गेहूँ के दाने', 'दूध भरे मक्का के दाने', 'दूध भरे ज्वार के दाने', 'दूध भरे धान'],
+                answer: 'दूध भरे ज्वार के दाने',
+            },
+            {
+                question: 'नागराजन के मामा कहाँ रहते थे ?',
+                options: ['सिंगापुर', 'त्रिवेंद्रम', 'दुबई', 'इंग्लैंड'],
+                answer: ' सिंगापुर',
+            },
+            {
+                question: 'वन के मार्ग में’ पाठ के कवि कौन हैं ?',
+                options: [' विष्णु प्रभाकर ', 'जयंत विष्णु नार्लीकर', 'तुलसीदास', 'सुमित्रानंदन पंत'],
+                answer: 'तुलसीदास',
+            },
+            {
+                question: 'नेहरू जी ने यह पत्र किसको लिखा था?',
+                options: [
+                    'भारत के बच्चों को',
+                    'अपनी पुत्री इंदिरा को',
+                    'भारत के साहित्यकारों कोని',
+                    'धार्मिक नेताओं को',
+                ],
+            answer: 'अपनी पुत्री इंदिरा को',
+            },
+            {
+                question: ' वैद्य जी को बुलाकर कौन लाया?',
+                options: [' मोहन की माँ', 'నత్తిमोहन के पिता', 'పత్తిमोहन के पड़ोसी दीनानाथ', 'मोहन का मित्र'],
+                answer: ' मोहन की माँ',
+            },
+            {
+               
+                question: ' अक्षरों की खोज का सिलसिला लगभग कब शुरू हुआ?',
+                options: ['एक हजार साल पहले', 'दस हज़ार साल पहले', 'छह हजार साल पहले', 'दो हज़ार साल पहले'],
+                answer: 'छह हजार साल पहले',
+            },
+        ];
+
+        const quizContainer = document.getElementById('quiz');
+        const resultContainer = document.getElementById('result');
+        const submitButton = document.getElementById('submit');
+        const retryButton = document.getElementById('retry');
+        const showAnswerButton = document.getElementById('showAnswer');
+
+        let currentQuestion = 0;
+        let score = 0;
+        let incorrectAnswers = [];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function displayQuestion() {
+            const questionData = quizData[currentQuestion];
+
+            const questionElement = document.createElement('div');
+            questionElement.className = 'question';
+            questionElement.innerHTML = questionData.question;
+
+            const optionsElement = document.createElement('div');
+            optionsElement.className = 'options';
+
+            const shuffledOptions = [...questionData.options];
+            shuffleArray(shuffledOptions);
+
+            for (let i = 0; i < shuffledOptions.length; i++) {
+                const option = document.createElement('label');
+                option.className = 'option';
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'quiz';
+                radio.value = shuffledOptions[i];
+
+                const optionText = document.createTextNode(shuffledOptions[i]);
+
+                option.appendChild(radio);
+                option.appendChild(optionText);
+                optionsElement.appendChild(option);
+            }
+
+            quizContainer.innerHTML = '';
+            quizContainer.appendChild(questionElement);
+            quizContainer.appendChild(optionsElement);
+        }
+
+        function checkAnswer() {
+            const selectedOption = document.querySelector('input[name="quiz"]:checked');
+            if (selectedOption) {
+                const answer = selectedOption.value;
+                if (answer === quizData[currentQuestion].answer) {
+                    score++;
+                } else {
+                    incorrectAnswers.push({
+                        question: quizData[currentQuestion].question,
+                        incorrectAnswer: answer,
+                        correctAnswer: quizData[currentQuestion].answer,
+                    });
+                }
+                currentQuestion++;
+                selectedOption.checked = false;
+                if (currentQuestion < quizData.length) {
+                    displayQuestion();
+                } else {
+                    displayResult();
+                }
+            }
+        }
+
+        function displayResult() {
+            quizContainer.style.display = 'none';
+            submitButton.style.display = 'none';
+            retryButton.style.display = 'inline-block';
+            showAnswerButton.style.display = 'inline-block';
+            resultContainer.innerHTML = `You scored ${score} out of ${quizData.length}!`;
+        }
+
+        function retryQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            incorrectAnswers = [];
+            quizContainer.style.display = 'block';
+            submitButton.style.display = 'inline-block';
+            retryButton.style.display = 'none';
+            showAnswerButton.style.display = 'none';
+            resultContainer.innerHTML = '';
+            displayQuestion();
+        }
+
+        function showAnswer() {
+            quizContainer.style.display = 'none';
+            submitButton.style.display = 'none';
+            retryButton.style.display = 'inline-block';
+            showAnswerButton.style.display = 'none';
+
+            let incorrectAnswersHtml = '';
+            for (let i = 0; i < incorrectAnswers.length; i++) {
+                incorrectAnswersHtml += `
+          <p>
+            <strong>Question:</strong> ${incorrectAnswers[i].question}<br>
+            <strong>Your Answer:</strong> ${incorrectAnswers[i].incorrectAnswer}<br>
+            <strong>Correct Answer:</strong> ${incorrectAnswers[i].correctAnswer}
+          </p>
+        `;
+            }
+
+            resultContainer.innerHTML = `
+        <p>You scored ${score} out of ${quizData.length}!</p>
+        <p>Incorrect Answers:</p>
+        ${incorrectAnswersHtml}
+      `;
+        }
+
+        submitButton.addEventListener('click', checkAnswer);
+        retryButton.addEventListener('click', retryQuiz);
+        showAnswerButton.addEventListener('click', showAnswer);
+
+        displayQuestion();
+    </script>
+</body>
+</html>
